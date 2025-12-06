@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Horas Extras</title>
+    <title>Herramienta de Control de Módulos</title>
     
-    <!-- Cargamos React y Tailwind desde Internet (CDN) -->
+    <!-- Librerías -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        /* Ajustes para móviles */
         body { -webkit-tap-highlight-color: transparent; }
-        input, select { font-size: 16px; } /* Evita zoom en iPhone */
+        input, select { font-size: 16px; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="bg-slate-100 text-slate-800">
 
     <div id="root"></div>
 
     <script type="text/babel">
-        // --- Íconos SVG (Inline para no depender de librerías externas) ---
+        // --- Íconos ---
         const Icons = {
             Clock: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
             Plus: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
@@ -33,21 +34,23 @@
             ChevronUp: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"/></svg>,
             ChevronRight: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>,
             DollarSign: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
-            Info: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>,
             Shield: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
-            X: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            UploadCloud: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/><polyline points="16 16 12 12 8 16"/></svg>,
+            Save: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>,
+            Mail: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
+            Code: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>,
+            Users: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
         };
 
-        const { useState, useEffect, useMemo } = React;
+        const { useState, useEffect, useMemo, useRef } = React;
 
         function App() {
             const [entries, setEntries] = useState([]);
             const [expandedMonths, setExpandedMonths] = useState({});
             const [errors, setErrors] = useState({});
             const [monthlyPrices, setMonthlyPrices] = useState({});
-            
-            // Estado para el aviso de privacidad
             const [showInfoBanner, setShowInfoBanner] = useState(false);
+            const fileInputRef = useRef(null);
 
             const [formData, setFormData] = useState({
                 date: new Date().toISOString().split('T')[0],
@@ -56,7 +59,6 @@
                 endTime: '22:00'
             });
 
-            // Cargar datos
             useEffect(() => {
                 const savedEntries = localStorage.getItem('overtime_entries');
                 const savedMonthlyPrices = localStorage.getItem('overtime_monthly_prices');
@@ -67,109 +69,111 @@
                     const currentMonth = new Date().toISOString().slice(0, 7);
                     setExpandedMonths(prev => ({...prev, [currentMonth]: true}));
                 }
-                if (savedMonthlyPrices) {
-                    setMonthlyPrices(JSON.parse(savedMonthlyPrices));
-                }
-                
-                // Si no ha visto el aviso, mostrarlo
-                if (!infoSeen) {
-                    setShowInfoBanner(true);
-                }
+                if (savedMonthlyPrices) setMonthlyPrices(JSON.parse(savedMonthlyPrices));
+                if (!infoSeen) setShowInfoBanner(true);
             }, []);
 
-            // Guardar datos
-            useEffect(() => {
-                localStorage.setItem('overtime_entries', JSON.stringify(entries));
-            }, [entries]);
+            useEffect(() => { localStorage.setItem('overtime_entries', JSON.stringify(entries)); }, [entries]);
+            useEffect(() => { localStorage.setItem('overtime_monthly_prices', JSON.stringify(monthlyPrices)); }, [monthlyPrices]);
 
-            useEffect(() => {
-                localStorage.setItem('overtime_monthly_prices', JSON.stringify(monthlyPrices));
-            }, [monthlyPrices]);
-
-            // Función para cerrar aviso
             const dismissInfo = () => {
                 setShowInfoBanner(false);
                 localStorage.setItem('overtime_privacy_seen', 'true');
+            };
+
+            const exportBackup = () => {
+                const backupData = { entries, monthlyPrices, exportDate: new Date().toISOString() };
+                const blob = new Blob([JSON.stringify(backupData)], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = `backup_horas_trabajadores_${new Date().toISOString().slice(0, 10)}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            const triggerImport = () => {
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = ''; 
+                    fileInputRef.current.click();
+                }
+            };
+
+            const handleImportBackup = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.entries && Array.isArray(data.entries)) {
+                            if (window.confirm("Se encontraron registros en la copia.\n\n¿Deseas reemplazar los datos actuales con esta copia de seguridad?")) {
+                                setEntries(data.entries);
+                                setMonthlyPrices(data.monthlyPrices || {});
+                                const newExpanded = {};
+                                data.entries.forEach(entry => { newExpanded[entry.date.slice(0, 7)] = true; });
+                                setExpandedMonths(newExpanded);
+                                alert("¡Datos restaurados con éxito!");
+                            }
+                        } else { alert("Error: Archivo inválido."); }
+                    } catch (error) { alert("Error crítico al leer el archivo."); }
+                };
+                reader.readAsText(file);
             };
 
             // --- Lógica de Negocio ---
             const monthlyData = useMemo(() => {
                 const groups = {};
                 const tempGroups = {};
-                
-                // Agrupar
                 entries.forEach(entry => {
                     const monthKey = entry.date.slice(0, 7);
                     if (!tempGroups[monthKey]) tempGroups[monthKey] = [];
                     tempGroups[monthKey].push(entry);
                 });
 
-                // Procesar
                 Object.keys(tempGroups).forEach(monthKey => {
                     const currentMonthPrices = monthlyPrices[monthKey] || { ms: '', md: '' };
                     const priceMS = parseFloat(currentMonthPrices.ms) || 0;
                     const priceMD = parseFloat(currentMonthPrices.md) || 0;
-
                     const chronEntries = [...tempGroups[monthKey]].sort((a, b) => new Date(a.date) - new Date(b.date));
                     
                     let accumulatedModules = 0;
-                    let moneyQuota = 0; 
-                    let moneyExcess = 0; 
-                    let totalMS = 0;
-                    let totalMD = 0;
+                    let moneyQuota = 0, moneyExcess = 0, totalMS = 0, totalMD = 0;
 
                     const processedEntries = chronEntries.map(entry => {
                         const entryModules = entry.ms + entry.md;
                         const entryCost = (entry.ms * priceMS) + (entry.md * priceMD);
                         
-                        let entryCostInQuota = 0;
-                        let entryCostExcess = 0;
-
+                        let entryCostInQuota = 0, entryCostExcess = 0;
                         if (accumulatedModules >= 40) {
                             entryCostExcess = entryCost;
                         } else if (accumulatedModules + entryModules <= 40) {
                             entryCostInQuota = entryCost;
                         } else {
                             const availableQuota = 40 - accumulatedModules;
-                            let msForQuota = 0;
-                            let mdForQuota = 0;
+                            let msForQuota = 0, mdForQuota = 0;
+                            if (entry.ms >= availableQuota) { msForQuota = availableQuota; mdForQuota = 0; } 
+                            else { msForQuota = entry.ms; mdForQuota = availableQuota - entry.ms; }
                             
-                            if (entry.ms >= availableQuota) {
-                                msForQuota = availableQuota;
-                                mdForQuota = 0;
-                            } else {
-                                msForQuota = entry.ms;
-                                mdForQuota = availableQuota - entry.ms;
-                            }
-
                             const msForExcess = entry.ms - msForQuota;
                             const mdForExcess = entry.md - mdForQuota;
-
                             entryCostInQuota = (msForQuota * priceMS) + (mdForQuota * priceMD);
                             entryCostExcess = (msForExcess * priceMS) + (mdForExcess * priceMD);
                         }
 
-                        moneyQuota += entryCostInQuota;
-                        moneyExcess += entryCostExcess;
-                        accumulatedModules += entryModules;
-                        totalMS += entry.ms;
-                        totalMD += entry.md;
-
+                        moneyQuota += entryCostInQuota; moneyExcess += entryCostExcess;
+                        accumulatedModules += entryModules; totalMS += entry.ms; totalMD += entry.md;
                         return { ...entry, cost: entryCost };
                     });
 
                     groups[monthKey] = {
                         entries: processedEntries.sort((a, b) => new Date(b.date) - new Date(a.date)),
-                        ms: totalMS,
-                        md: totalMD,
-                        total: totalMS + totalMD,
-                        moneyQuota,
-                        moneyExcess,
-                        totalMoney: moneyQuota + moneyExcess,
+                        ms: totalMS, md: totalMD, total: totalMS + totalMD,
+                        moneyQuota, moneyExcess, totalMoney: moneyQuota + moneyExcess,
                         prices: currentMonthPrices
                     };
                 });
-
                 return groups;
             }, [entries, monthlyPrices]);
 
@@ -178,17 +182,14 @@
             const currentFormStats = monthlyData[formMonthKey] || { ms: 0, md: 0, total: 0 };
             const isFormMonthOverLimit = currentFormStats.total > 40;
 
-            // --- Helpers ---
             const calculateModules = (startStr, endStr) => {
                 let start = parseInt(startStr.split(':')[0]);
                 let end = parseInt(endStr.split(':')[0]);
                 if (end <= start) end += 24;
-                let msCount = 0;
-                let mdCount = 0;
+                let msCount = 0, mdCount = 0;
                 for (let currentHour = start; currentHour < end; currentHour += 2) {
                     const normalizedHour = currentHour % 24;
-                    if (normalizedHour >= 6 && normalizedHour < 22) msCount++;
-                    else mdCount++;
+                    if (normalizedHour >= 6 && normalizedHour < 22) msCount++; else mdCount++;
                 }
                 return { ms: msCount, md: mdCount };
             };
@@ -199,27 +200,18 @@
             };
 
             const handleMonthPriceChange = (monthKey, type, value) => {
-                setMonthlyPrices(prev => ({
-                    ...prev,
-                    [monthKey]: { ...(prev[monthKey] || {}), [type]: value }
-                }));
+                setMonthlyPrices(prev => ({ ...prev, [monthKey]: { ...(prev[monthKey] || {}), [type]: value } }));
             };
 
             const addEntry = (e) => {
                 e.preventDefault();
                 if (!formData.service.trim()) { setErrors({ service: true }); return; }
                 if (formData.startTime === formData.endTime) { alert("Horas iguales"); return; }
-
                 const { ms, md } = calculateModules(formData.startTime, formData.endTime);
                 const newEntry = {
-                    id: Date.now(),
-                    date: formData.date,
-                    service: formData.service,
-                    startTime: formData.startTime,
-                    endTime: formData.endTime,
-                    ms, md
+                    id: Date.now(), date: formData.date, service: formData.service,
+                    startTime: formData.startTime, endTime: formData.endTime, ms, md
                 };
-
                 setEntries([newEntry, ...entries]); 
                 setFormData({ ...formData, service: '' });
                 setErrors({});
@@ -237,39 +229,28 @@
                     if (!grouped[monthKey]) grouped[monthKey] = [];
                     grouped[monthKey].push(entry);
                 });
-
                 let csvContent = "sep=;\nMES;FECHA;ENTRADA;SALIDA;SERVICIO;MS;MD;VALOR\n";
-
                 Object.keys(grouped).sort().forEach(monthKey => {
                     const monthPrices = monthlyPrices[monthKey] || { ms: 0, md: 0 };
                     const priceMS = parseFloat(monthPrices.ms) || 0;
                     const priceMD = parseFloat(monthPrices.md) || 0;
                     const groupEntries = grouped[monthKey];
                     const monthName = new Date(monthKey + '-01T12:00:00').toLocaleDateString('es-AR', { month: 'long' }).toUpperCase();
-                    
                     let subTotalMS = 0, subTotalMD = 0, subTotalMoney = 0;
-
                     groupEntries.forEach((e, index) => {
                         subTotalMS += e.ms; subTotalMD += e.md;
                         const cost = (e.ms * priceMS) + (e.md * priceMD);
                         subTotalMoney += cost;
-                        
-                        const row = [
-                            index === 0 ? monthName : "", 
-                            e.date, e.startTime, e.endTime, 
-                            `"${e.service.replace(/"/g, '""')}"`, 
-                            e.ms, e.md, `$${cost.toLocaleString('es-AR')}`
-                        ].join(";");
+                        const row = [index === 0 ? monthName : "", e.date, e.startTime, e.endTime, `"${e.service.replace(/"/g, '""')}"`, e.ms, e.md, `$${cost.toLocaleString('es-AR')}`].join(";");
                         csvContent += row + "\n";
                     });
                     csvContent += `TOTAL ${monthName};;;;;${subTotalMS};${subTotalMD};$${subTotalMoney.toLocaleString('es-AR')}\n`;
                 });
-                
                 const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement("a");
                 const url = URL.createObjectURL(blob);
                 link.setAttribute("href", url);
-                link.setAttribute("download", "registro_horas.csv");
+                link.setAttribute("download", "registro_horas_trabajadores.csv");
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -285,109 +266,136 @@
             const timeOptions = Array.from({ length: 13 }, (_, i) => `${(i * 2).toString().padStart(2, '0')}:00`);
 
             return (
-                <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
+                <div className="min-h-screen bg-slate-100 font-sans text-slate-800 pb-20">
                     
-                    {/* Aviso de Privacidad / Local Storage */}
+                    {/* Aviso */}
                     {showInfoBanner && (
-                        <div className="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-50">
+                        <div className="bg-slate-800 text-white p-4 shadow-lg sticky top-0 z-50 border-b-4 border-blue-500">
                             <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                                 <div className="flex items-start gap-3">
-                                    <div className="w-6 h-6 mt-1 flex-shrink-0"><Icons.Shield /></div>
+                                    <div className="w-6 h-6 mt-1 flex-shrink-0 text-blue-400"><Icons.Shield /></div>
                                     <div className="text-sm">
-                                        <p className="font-bold text-base mb-1">Tus datos son privados y seguros</p>
-                                        <p className="opacity-90">La información se guarda <strong>únicamente en este dispositivo</strong>. No se comparte con nadie.</p>
-                                        <p className="opacity-90 mt-1 text-xs">⚠️ Si borras el historial o cambias de celular, perderás los datos. Recuerda <strong>Exportar</strong> regularmente.</p>
+                                        <p className="font-bold text-base mb-1">Datos Seguros y Privados</p>
+                                        <p className="opacity-90">La información se guarda <strong>localmente en tu dispositivo</strong>. Nadie más tiene acceso a tus registros.</p>
                                     </div>
                                 </div>
-                                <button onClick={dismissInfo} className="bg-white text-blue-700 px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-50 transition flex-shrink-0 whitespace-nowrap">
-                                    Entendido, cerrar
-                                </button>
+                                <button onClick={dismissInfo} className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-500 transition flex-shrink-0 whitespace-nowrap shadow">Entendido</button>
                             </div>
                         </div>
                     )}
 
                     <div className="p-4 md:p-8">
-                        <div className="max-w-4xl mx-auto space-y-6">
+                        <div className="max-w-4xl mx-auto space-y-8">
                             
-                            {/* Header */}
-                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                <div>
-                                    <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-                                        <div className="w-6 h-6 text-indigo-600"><Icons.Clock /></div>
-                                        Gestión de Horas Extras
-                                    </h1>
-                                    <p className="text-slate-500 text-sm">Calculadora de módulos y valores mensuales.</p>
+                            {/* Header Independiente */}
+                            <div className="flex flex-col md:flex-row items-center justify-between bg-white p-6 rounded-2xl shadow-sm border-t-4 border-slate-700 gap-6">
+                                <div className="flex items-center gap-4 text-center md:text-left">
+                                    {/* Ícono de Trabajadores */}
+                                    <div className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0 bg-slate-100 rounded-full flex items-center justify-center text-slate-700 border-4 border-white shadow-md">
+                                        <div className="w-10 h-10 md:w-12 md:h-12"><Icons.Users /></div>
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1">Iniciativa Independiente</h2>
+                                        <h1 className="text-2xl md:text-3xl font-extrabold text-slate-800 leading-tight text-blue-700">
+                                            Herramienta de control y gestión de módulos
+                                        </h1>
+                                        <p className="text-slate-500 font-medium text-sm mt-1">Desarrollada por trabajadores de Policía Municipal de Tránsito - Municipalidad de Córdoba</p>
+                                    </div>
                                 </div>
-                                <button onClick={exportToCSV} className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
-                                    <div className="w-4 h-4"><Icons.Download /></div> Exportar
-                                </button>
+
+                                {/* Botonera */}
+                                <div className="flex flex-col gap-2 w-full md:w-auto">
+                                    <div className="flex gap-2">
+                                        <button onClick={exportBackup} className="flex-1 flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-colors border border-slate-200">
+                                            <div className="w-4 h-4"><Icons.Save /></div> Respaldo
+                                        </button>
+                                        <button onClick={triggerImport} className="flex-1 flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-colors border border-slate-200">
+                                            <div className="w-4 h-4"><Icons.UploadCloud /></div> Restaurar
+                                        </button>
+                                    </div>
+                                    <button onClick={exportToCSV} className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow-sm transition-colors uppercase tracking-wide">
+                                        <div className="w-4 h-4"><Icons.Download /></div> Descargar Excel
+                                    </button>
+                                    <input type="file" ref={fileInputRef} onChange={handleImportBackup} accept=".json" style={{ display: 'none' }} />
+                                </div>
                             </div>
 
                             {/* Formulario y Resumen */}
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-                                <div className="md:col-span-8 bg-white rounded-xl shadow-md border border-slate-200 p-6">
-                                    <h2 className="text-sm font-semibold text-slate-700 mb-4 uppercase tracking-wider flex items-center gap-2">
-                                        <div className="w-4 h-4 text-indigo-600"><Icons.Plus /></div> Nuevo Registro
+                                {/* Formulario */}
+                                <div className="md:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6 relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-blue-600"></div>
+                                    <h2 className="text-sm font-bold text-slate-700 mb-6 uppercase tracking-wider flex items-center gap-2 border-b pb-2 border-slate-100">
+                                        <div className="w-5 h-5 text-blue-600"><Icons.Plus /></div> Nuevo Registro
                                     </h2>
-                                    <form onSubmit={addEntry} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <form onSubmit={addEntry} className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div className="col-span-1 md:col-span-2">
-                                            <label className="block text-xs font-medium text-slate-600 mb-1">Fecha</label>
-                                            <input type="date" name="date" required value={formData.date} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+                                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Fecha</label>
+                                            <input type="date" name="date" required value={formData.date} onChange={handleInputChange} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium text-slate-700" />
                                         </div>
                                         <div className="col-span-1 md:col-span-2">
-                                            <label className={`block text-xs font-medium mb-1 ${errors.service ? 'text-red-600' : 'text-slate-600'}`}>
-                                                Servicio / Detalle {errors.service && <span className="ml-1 text-red-500">*</span>}
+                                            <label className={`block text-xs font-bold uppercase mb-1 ${errors.service ? 'text-red-600' : 'text-slate-500'}`}>
+                                                Servicio / Detalle {errors.service && <span className="text-red-500">*</span>}
                                             </label>
-                                            <input type="text" name="service" placeholder="Ej. Guardia" value={formData.service} onChange={handleInputChange} className={`w-full p-2 border rounded-lg focus:ring-2 outline-none transition-colors ${errors.service ? 'border-red-400 bg-red-50 focus:ring-red-200 text-red-900 placeholder-red-300' : 'border-slate-300 focus:ring-indigo-500'}`} />
-                                            {errors.service && <p className="text-xs text-red-500 mt-1 flex items-center gap-1"><div className="w-3 h-3"><Icons.AlertCircle /></div> Campo requerido</p>}
+                                            <input type="text" name="service" placeholder="Ej. Guardia, Operativo..." value={formData.service} onChange={handleInputChange} className={`w-full p-2.5 bg-slate-50 border rounded-lg focus:ring-2 outline-none transition-all font-medium ${errors.service ? 'border-red-300 bg-red-50 focus:ring-red-200 placeholder-red-300' : 'border-slate-200 focus:ring-blue-500 focus:border-blue-500'}`} />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-600 mb-1">Entrada</label>
-                                            <select name="startTime" value={formData.startTime} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Entrada</label>
+                                            <select name="startTime" value={formData.startTime} onChange={handleInputChange} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-medium text-slate-700">
                                                 {timeOptions.map(t => <option key={`start-${t}`} value={t}>{t}</option>)}
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-slate-600 mb-1">Salida</label>
-                                            <select name="endTime" value={formData.endTime} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Salida</label>
+                                            <select name="endTime" value={formData.endTime} onChange={handleInputChange} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-medium text-slate-700">
                                                 {timeOptions.map(t => <option key={`end-${t}`} value={t}>{t}</option>)}
                                             </select>
                                         </div>
                                         <div className="col-span-1 md:col-span-2 mt-2">
-                                            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-lg transition-colors font-medium flex justify-center items-center gap-2">
-                                                <div className="w-5 h-5"><Icons.Plus /></div> Agregar
+                                            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3.5 rounded-lg transition-all font-bold shadow-md hover:shadow-lg flex justify-center items-center gap-2 transform active:scale-[0.99]">
+                                                <div className="w-5 h-5"><Icons.Plus /></div> AGREGAR REGISTRO
                                             </button>
                                         </div>
                                     </form>
                                 </div>
 
+                                {/* Resumen Mensual (Sidebar) */}
                                 <div className="md:col-span-4 space-y-3">
-                                    <div className="text-xs font-semibold text-slate-400 uppercase text-center mb-1">Resumen {formatMonth(formMonthKey)}</div>
-                                    <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center">
-                                        <span className="text-sm font-medium text-slate-600">Simples</span>
-                                        <span className="text-xl font-bold text-indigo-600">{currentFormStats.ms}</span>
+                                    <div className="bg-slate-800 text-white text-xs font-bold uppercase text-center py-2 rounded-t-lg">
+                                        Estado: {formatMonth(formMonthKey)}
                                     </div>
-                                    <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center">
-                                        <span className="text-sm font-medium text-slate-600">Dobles</span>
-                                        <span className="text-xl font-bold text-purple-600">{currentFormStats.md}</span>
-                                    </div>
-                                    <div className={`p-4 rounded-xl shadow-sm border flex justify-between items-center transition-colors ${isFormMonthOverLimit ? 'bg-red-50 border-red-300' : 'bg-slate-800 border-slate-800'}`}>
-                                        <span className={`text-sm font-medium ${isFormMonthOverLimit ? 'text-red-700' : 'text-slate-300'}`}>Total</span>
-                                        <div className="flex items-center gap-2">
-                                            <span className={`text-2xl font-bold ${isFormMonthOverLimit ? 'text-red-700' : 'text-white'}`}>{currentFormStats.total}</span>
-                                            {isFormMonthOverLimit && <div className="w-5 h-5 text-red-500 animate-pulse"><Icons.AlertCircle /></div>}
+                                    <div className="bg-white p-5 rounded-b-xl shadow-sm border border-slate-200 space-y-4">
+                                        <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+                                            <span className="text-sm font-bold text-slate-500">Simples (MS)</span>
+                                            <span className="text-xl font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-md border border-blue-100">{currentFormStats.ms}</span>
                                         </div>
+                                        <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+                                            <span className="text-sm font-bold text-slate-500">Dobles (MD)</span>
+                                            <span className="text-xl font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-md border border-indigo-100">{currentFormStats.md}</span>
+                                        </div>
+                                        <div className={`p-4 rounded-lg border-2 flex justify-between items-center transition-colors ${isFormMonthOverLimit ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-200'}`}>
+                                            <span className={`text-sm font-bold uppercase ${isFormMonthOverLimit ? 'text-red-700' : 'text-slate-600'}`}>Total</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className={`text-2xl font-extrabold ${isFormMonthOverLimit ? 'text-red-600' : 'text-slate-800'}`}>{currentFormStats.total}</span>
+                                                {isFormMonthOverLimit && <div className="w-5 h-5 text-red-500 animate-pulse"><Icons.AlertCircle /></div>}
+                                            </div>
+                                        </div>
+                                        {isFormMonthOverLimit && <div className="text-center text-xs font-bold text-red-500 uppercase tracking-wide">Límite de 40 excedido</div>}
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="border-t border-slate-200 my-6"></div>
+                            <div className="border-t border-slate-200"></div>
 
-                            {/* Lista de Meses */}
+                            {/* Historial */}
                             <div className="space-y-4">
-                                <h3 className="text-lg font-bold text-slate-800">Historial de Registros</h3>
+                                <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
+                                    <Icons.Clock /> Historial de Cargas
+                                </h3>
                                 {availableMonths.length === 0 ? (
-                                    <div className="text-center py-10 bg-white rounded-xl border border-dashed border-slate-300 text-slate-400">No hay registros cargados.</div>
+                                    <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-slate-200 text-slate-400">
+                                        <p>No hay registros cargados aún.</p>
+                                    </div>
                                 ) : (
                                     availableMonths.map(monthKey => {
                                         const data = monthlyData[monthKey];
@@ -395,76 +403,103 @@
                                         const isOver = data.total > 40;
 
                                         return (
-                                            <div key={monthKey} className={`bg-white rounded-xl shadow-sm border transition-all overflow-hidden ${isExpanded ? 'border-indigo-200 ring-1 ring-indigo-50' : 'border-slate-200'}`}>
+                                            <div key={monthKey} className={`bg-white rounded-xl shadow-sm border transition-all overflow-hidden ${isExpanded ? 'border-blue-300 ring-2 ring-blue-50' : 'border-slate-200 hover:border-blue-200'}`}>
                                                 <div onClick={() => toggleMonth(monthKey)} className="p-4 flex flex-col cursor-pointer hover:bg-slate-50 transition-colors gap-4">
                                                     <div className="flex items-center justify-between w-full">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className={`p-2 rounded-full ${isExpanded ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-500'}`}>
+                                                        <div className="flex items-center gap-4">
+                                                            <div className={`p-2 rounded-full transition-colors ${isExpanded ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
                                                                 <div className="w-5 h-5">{isExpanded ? <Icons.ChevronUp /> : <Icons.ChevronRight />}</div>
                                                             </div>
                                                             <div>
                                                                 <h4 className="font-bold text-slate-800 capitalize text-lg">{formatMonth(monthKey)}</h4>
-                                                                <p className="text-xs text-slate-500">{data.entries.length} registros</p>
+                                                                <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">{data.entries.length} registros</p>
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="text-center hidden sm:block"><span className="text-[10px] uppercase text-slate-400 font-bold block">MS</span><span className="font-semibold text-indigo-600">{data.ms}</span></div>
-                                                            <div className="text-center hidden sm:block"><span className="text-[10px] uppercase text-slate-400 font-bold block">MD</span><span className="font-semibold text-purple-600">{data.md}</span></div>
-                                                            <div className={`px-3 py-1 rounded text-center min-w-[50px] ${isOver ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'}`}><span className="text-[10px] uppercase font-bold block">Total</span><span className="font-bold">{data.total}</span></div>
+                                                        <div className="flex items-center gap-2 md:gap-4">
+                                                            <div className="hidden md:block text-right">
+                                                                <span className="text-[10px] uppercase text-slate-400 font-bold block">Simples</span>
+                                                                <span className="font-bold text-blue-600 text-lg">{data.ms}</span>
+                                                            </div>
+                                                            <div className="hidden md:block text-right">
+                                                                <span className="text-[10px] uppercase text-slate-400 font-bold block">Dobles</span>
+                                                                <span className="font-bold text-indigo-600 text-lg">{data.md}</span>
+                                                            </div>
+                                                            <div className={`px-4 py-2 rounded-lg text-center min-w-[70px] border ${isOver ? 'bg-red-50 border-red-100 text-red-700' : 'bg-slate-50 border-slate-100 text-slate-700'}`}>
+                                                                <span className="text-[10px] uppercase font-bold block opacity-70">Total</span>
+                                                                <span className="font-bold text-xl">{data.total}</span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     
                                                     {isExpanded && (
-                                                        <div className="border-t border-slate-100 pt-4 mt-2 cursor-default" onClick={e => e.stopPropagation()}>
-                                                            <div className="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 mb-4 flex flex-col md:flex-row gap-4 items-center justify-between">
-                                                                <div className="text-xs text-indigo-700 font-medium flex items-center gap-2">
-                                                                    <div className="w-4 h-4"><Icons.DollarSign /></div> Valores para {formatMonth(monthKey)}
+                                                        <div className="border-t border-slate-100 pt-5 mt-2 cursor-default" onClick={e => e.stopPropagation()}>
+                                                            {/* Configuración de Precios */}
+                                                            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 flex flex-col md:flex-row gap-6 items-center justify-between">
+                                                                <div className="text-sm text-slate-600 font-bold flex items-center gap-2">
+                                                                    <div className="w-5 h-5 text-green-600"><Icons.DollarSign /></div> 
+                                                                    Valores para {formatMonth(monthKey)}
                                                                 </div>
                                                                 <div className="flex gap-4 w-full md:w-auto">
-                                                                    <div className="relative flex-1 md:w-40">
-                                                                        <span className="absolute left-2 top-2 text-slate-400 text-xs font-bold">MS</span>
-                                                                        <input type="number" placeholder="0.00" value={data.prices.ms || ''} onChange={(e) => handleMonthPriceChange(monthKey, 'ms', e.target.value)} className="w-full pl-8 pr-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-indigo-500 outline-none" />
+                                                                    <div className="relative flex-1 md:w-40 group">
+                                                                        <span className="absolute left-3 top-2.5 text-slate-400 text-xs font-bold pointer-events-none">MS</span>
+                                                                        <input type="number" placeholder="0.00" value={data.prices.ms || ''} onChange={(e) => handleMonthPriceChange(monthKey, 'ms', e.target.value)} className="w-full pl-10 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-medium transition-all group-hover:border-blue-300" />
                                                                     </div>
-                                                                    <div className="relative flex-1 md:w-40">
-                                                                        <span className="absolute left-2 top-2 text-slate-400 text-xs font-bold">MD</span>
-                                                                        <input type="number" placeholder="0.00" value={data.prices.md || ''} onChange={(e) => handleMonthPriceChange(monthKey, 'md', e.target.value)} className="w-full pl-8 pr-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-purple-500 outline-none" />
+                                                                    <div className="relative flex-1 md:w-40 group">
+                                                                        <span className="absolute left-3 top-2.5 text-slate-400 text-xs font-bold pointer-events-none">MD</span>
+                                                                        <input type="number" placeholder="0.00" value={data.prices.md || ''} onChange={(e) => handleMonthPriceChange(monthKey, 'md', e.target.value)} className="w-full pl-10 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none font-medium transition-all group-hover:border-indigo-300" />
                                                                     </div>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="grid grid-cols-3 gap-2 text-sm mb-4">
-                                                                <div className="bg-green-50 p-2 rounded border border-green-100 text-center"><span className="block text-[10px] text-green-600 uppercase font-bold mb-1">Base (Hasta 40)</span><span className="font-bold text-green-700 block">{formatMoney(data.moneyQuota)}</span></div>
-                                                                <div className="bg-orange-50 p-2 rounded border border-orange-100 text-center"><span className="block text-[10px] text-orange-600 uppercase font-bold mb-1">Excedente</span><span className="font-bold text-orange-700 block">{formatMoney(data.moneyExcess)}</span></div>
-                                                                <div className="bg-slate-50 p-2 rounded border border-slate-200 text-center"><span className="block text-[10px] text-slate-500 uppercase font-bold mb-1">Total a Cobrar</span><span className="font-bold text-slate-800 block">{formatMoney(data.totalMoney)}</span></div>
+                                                            {/* Resultados Financieros */}
+                                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm mb-6">
+                                                                <div className="bg-green-50 p-3 rounded-lg border border-green-100 flex flex-col items-center justify-center">
+                                                                    <span className="text-[10px] text-green-600 uppercase font-bold mb-1">Base (Hasta 40)</span>
+                                                                    <span className="font-bold text-green-700 text-lg">{formatMoney(data.moneyQuota)}</span>
+                                                                </div>
+                                                                <div className="bg-orange-50 p-3 rounded-lg border border-orange-100 flex flex-col items-center justify-center">
+                                                                    <span className="text-[10px] text-orange-600 uppercase font-bold mb-1">Excedente</span>
+                                                                    <span className="font-bold text-orange-700 text-lg">{formatMoney(data.moneyExcess)}</span>
+                                                                </div>
+                                                                <div className="bg-slate-800 p-3 rounded-lg border border-slate-700 flex flex-col items-center justify-center text-white shadow-md">
+                                                                    <span className="text-[10px] text-slate-300 uppercase font-bold mb-1">Total a Cobrar</span>
+                                                                    <span className="font-bold text-lg text-emerald-300">{formatMoney(data.totalMoney)}</span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}
                                                 </div>
 
+                                                {/* Tabla */}
                                                 {isExpanded && (
-                                                    <div className="border-t border-slate-100 bg-slate-50/50">
+                                                    <div className="border-t border-slate-200">
                                                         <div className="overflow-x-auto">
                                                             <table className="w-full text-left border-collapse">
                                                                 <thead>
-                                                                    <tr className="bg-slate-100 text-slate-500 text-xs uppercase border-b border-slate-200">
-                                                                        <th className="p-4 font-semibold">Fecha</th>
-                                                                        <th className="p-4 font-semibold">Servicio</th>
-                                                                        <th className="p-4 font-semibold text-center text-indigo-600">MS</th>
-                                                                        <th className="p-4 font-semibold text-center text-purple-600">MD</th>
-                                                                        <th className="p-4 font-semibold text-right text-emerald-600">Valor</th>
-                                                                        <th className="p-4 font-semibold text-right"></th>
+                                                                    <tr className="bg-slate-50 text-slate-500 text-xs uppercase border-b border-slate-200">
+                                                                        <th className="p-4 font-bold">Fecha</th>
+                                                                        <th className="p-4 font-bold">Servicio</th>
+                                                                        <th className="p-4 font-bold text-center text-blue-600">MS</th>
+                                                                        <th className="p-4 font-bold text-center text-indigo-600">MD</th>
+                                                                        <th className="p-4 font-bold text-right text-emerald-600">Valor</th>
+                                                                        <th className="p-4 text-right"></th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody className="divide-y divide-slate-100 text-sm bg-white">
                                                                     {data.entries.map((entry) => (
-                                                                        <tr key={entry.id} className="hover:bg-slate-50 transition-colors">
+                                                                        <tr key={entry.id} className="hover:bg-blue-50/50 transition-colors group">
                                                                             <td className="p-4 text-slate-600 font-medium whitespace-nowrap">{new Date(entry.date + 'T12:00:00').toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' })}</td>
-                                                                            <td className="p-4 text-slate-800"><div>{entry.service}</div><div className="text-[10px] text-slate-400 font-mono">{entry.startTime} - {entry.endTime}</div></td>
-                                                                            <td className="p-4 text-center font-bold text-indigo-600">{entry.ms || '-'}</td>
-                                                                            <td className="p-4 text-center font-bold text-purple-600">{entry.md || '-'}</td>
-                                                                            <td className="p-4 text-right font-mono font-medium text-emerald-700">{formatMoney(entry.cost)}</td>
+                                                                            <td className="p-4 text-slate-800 font-medium">
+                                                                                <div>{entry.service}</div>
+                                                                                <div className="text-[11px] text-slate-400 font-mono mt-0.5 inline-block bg-slate-100 px-1.5 rounded">{entry.startTime} - {entry.endTime}</div>
+                                                                            </td>
+                                                                            <td className="p-4 text-center font-bold text-blue-600">{entry.ms || '-'}</td>
+                                                                            <td className="p-4 text-center font-bold text-indigo-600">{entry.md || '-'}</td>
+                                                                            <td className="p-4 text-right font-mono font-bold text-emerald-700">{formatMoney(entry.cost)}</td>
                                                                             <td className="p-4 text-right">
-                                                                                <button onClick={(e) => { e.stopPropagation(); deleteEntry(entry.id); }} className="text-slate-300 hover:text-red-500 transition-colors p-2"><div className="w-4 h-4"><Icons.Trash2 /></div></button>
+                                                                                <button onClick={(e) => { e.stopPropagation(); deleteEntry(entry.id); }} className="text-slate-300 hover:text-red-500 hover:bg-red-50 rounded p-2 transition-all opacity-0 group-hover:opacity-100">
+                                                                                    <div className="w-4 h-4"><Icons.Trash2 /></div>
+                                                                                </button>
                                                                             </td>
                                                                         </tr>
                                                                     ))}
@@ -478,13 +513,32 @@
                                     })
                                 )}
                             </div>
-                            
-                            {/* Footer Disclamer */}
-                            <div className="text-center text-xs text-slate-400 mt-12 pb-4">
-                                <p>🔒 Los datos se guardan localmente en tu dispositivo.</p>
-                            </div>
-
                         </div>
+
+                        {/* Footer con Créditos */}
+                        <div className="mt-16 pt-8 border-t border-slate-200 text-center">
+                            <div className="inline-flex flex-col items-center justify-center p-6 bg-white rounded-2xl shadow-sm border border-slate-100 max-w-lg mx-auto">
+                                <div className="w-8 h-8 text-slate-800 mb-3"><Icons.Users /></div>
+                                <p className="text-sm font-bold text-slate-700 mb-1">
+                                    Herramienta autogestionada por los trabajadores
+                                </p>
+                                <p className="text-xs text-slate-500 mb-4 italic">
+                                    "Ante la problemática de pagos, controlamos lo nuestro"
+                                </p>
+                                <div className="flex flex-col sm:flex-row items-center gap-2 text-xs">
+                                    <span className="font-bold text-slate-400 uppercase tracking-wide">Desarrollado por Martín Velasco</span>
+                                    <span className="hidden sm:inline text-slate-300">•</span>
+                                    <a href="mailto:martinvelasco@gmail.com" className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-medium bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors">
+                                        <div className="w-3 h-3"><Icons.Mail /></div>
+                                        martinvelasco@gmail.com
+                                    </a>
+                                </div>
+                            </div>
+                            <p className="text-[10px] text-slate-400 mt-6">
+                                Iniciativa independiente • Sin relación con el ejecutivo municipal
+                            </p>
+                        </div>
+
                     </div>
                 </div>
             );
